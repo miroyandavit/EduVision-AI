@@ -193,17 +193,13 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Configure marked to sanitize HTML for security
             marked.setOptions({
                 gfm: true,
                 breaks: true,
-                smartypants: true,
-                sanitizer: true // Enable sanitizer to prevent XSS
+                smartypants: true
             });
-        
-            // Function to update content with Markdown and LaTeX rendering
             function updateContent(element, content) {
-                element.innerHTML = marked.parse(contentWithDelimiters);
+                element.innerHTML = marked.parse(content);
             }
     
             const generateProblemButton = document.getElementById('generate-problem');
