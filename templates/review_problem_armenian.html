@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Մաթեմատիկայի Վերանայման Խնդրի Գեներատոր (Հայերեն)</title>
+    <!-- Link to Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to bottom, #E0F7FF, #FFFFFF); /* Light blue fading to white */
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1600px;
+            width: 100%;
+            margin: 20px auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(200, 200, 200, 0.2);
+        }
+
+        .left-column, .right-column {
+            flex: 1;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .input-section, .editor-section, .instruction-section {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        select, input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #6C63FF; /* Matching button color */
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #5552e4; /* Slightly darker shade */
+        }
+
+        textarea {
+            height: 40px;
+            resize: vertical;
+        }
+
+        .editor-section div {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            line-height: 1.5;
+            height: 300px;
+            overflow-y: auto;
+            background-color: #fff;
+        }
+
+        #bot-solution {
+            height: 500px;
+        }
+
+        #chapter-content {
+            height: 150px; 
+        }
+
+        ::placeholder {
+            font-size: 16px;
+            color: #999;
+            line-height: 1.5;
+        }
+
+        .markdown-output {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            margin-top: 20px;
+        }
+    </style>
+    <!-- MathJax configuration for proper inline and display math rendering -->
+    <script type="text/javascript">
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+                ignoreHtmlClass: 'tex2jax_ignore'
+            }
+        };
+    </script>
+    <!-- Include MathJax for LaTeX rendering -->
+    <script type="text/javascript" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Column -->
+        <div class="left-column">
+            <h1>Խնդրի Գեներատոր</h1>
+
+            <!-- Chapter Selection and Application Area Input -->
+            <div class="input-section">
+                <label for="example-problem">Օրինակ Խնդիր.</label>
+                <textarea id="example-problem" placeholder="Պատճենեք խնդիրը..."></textarea>
+                <label for="mistake-description">Սխալի Նկարագրություն.</label>
+                <textarea id="mistake-description" placeholder="Մուտքագրեք սխալի կարճ նկարագրություն..."></textarea>
+                <button id="generate-problem">Գեներացնել</button>
+            </div>
+
+            <!-- Editable Response Area -->
+            <div class="editor-section">
+                <label for="bot-problem">Գեներացված Խնդիր.</label>
+                <div id="bot-problem" contenteditable="true"></div>
+            </div>
+
+            <!-- Instruction Section -->
+            <div class="instruction-section">
+                <label for="user-instruction-problem">Խնդիրը Փոփոխելու Հրահանգներ:</label>
+                <textarea id="user-instruction-problem" placeholder="Մուտքագրեք ձեր հրահանգները այստեղ..."></textarea>
+                <button id="change-problem">Փոփոխել</button>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="right-column">
+            <h1>Լուծման Գեներատոր</h1>
+            
+            <div class="input-section">
+                <button id="generate-solution">Գեներացնել</button>
+            </div>
+
+            <!-- Editable Response Area -->
+            <div class="editor-section">
+                <label for="bot-solution">Լուծում.</label>
+                <div id="bot-solution" contenteditable="true"></div>
+            </div>
+
+            <!-- Instruction Section -->
+            <div class="instruction-section">
+                <label for="user-instruction-sols">Լուծումը Փոփոխելու Հրահանգներ.</label>
+                <textarea id="user-instruction-sols" placeholder="Մուտքագրեք ձեր հրահանգները այստեղ..."></textarea>
+                <button id="change-sols">Փոփոխել</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Configure marked to sanitize HTML for security
+            marked.setOptions({
+                gfm: true,
+                breaks: true,
+                smartypants: true,
+                sanitizer: true // Enable sanitizer to prevent XSS
+            });
+    
+            // Function to update content with Markdown and LaTeX rendering
+            function updateContent(element, content) {
+                element.innerHTML = marked.parse(contentWithDelimiters);
+            }
+    
+            const generateProblemButton = document.getElementById('generate-problem');
+            const changeProblemButton = document.getElementById('change-problem');
+            const botProblem = document.getElementById('bot-problem');
+            const userInstructionProblem = document.getElementById('user-instruction-problem');
+    
+            const generateSolutionButton = document.getElementById('generate-solution');
+            const changeSolutionButton = document.getElementById('change-sols');
+            const botSolution = document.getElementById('bot-solution');
+            const userInstructionSols = document.getElementById('user-instruction-sols');
+    
+            generateProblemButton.addEventListener('click', function () {
+                const exampleProblem = document.getElementById('example-problem').value;
+                const mistakeDescription = document.getElementById('mistake-description').value.trim();
+    
+                if (exampleProblem === '') {
+                    alert('Խնդրում ենք պատճենել օրինակ խնդիրը։');
+                    return;
+                }
+    
+                botProblem.innerHTML = "Բեռնվում է...";  // Display Loading... before making the request
+    
+                // Send the initial request to the server
+                fetch(`/generate_review_problem/armenian`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ exampleProblem: exampleProblem, mistakeDescription: mistakeDescription })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Սերվերի սխալ: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateContent(botProblem, data.answer);
+                    botProblem.contentEditable = true; // Make the response editable after generating it
+                })
+                .catch(error => {
+                    console.error("Սխալ տեղի ունեցավ:", error);
+                    botProblem.innerHTML = `Սխալ տեղի ունեցավ: ${error.message}`;
+                    botProblem.contentEditable = false;
+                });
+            });
+    
+            changeProblemButton.addEventListener('click', function () {
+                const exampleProblem = document.getElementById('example-problem').value;
+                const mistakeDescription = document.getElementById('mistake-description').value.trim();
+                const userInstructionText = userInstructionProblem.value.trim();
+                const currentProblemText = botProblem.innerHTML.trim();
+    
+                if (userInstructionText === '') {
+                    alert('Խնդրում ենք մուտքագրել հրահանգներ պատասխանն ուղղելու համար։');
+                    return;
+                }
+    
+                botProblem.innerHTML = "Բեռնվում է...";  // Display Loading... before making the request
+    
+                // Send the user's instruction and the current response to the backend
+                fetch(`/change_review_problem/armenian`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ exampleProblem: exampleProblem, mistakeDescription: mistakeDescription,
+                        instruction: userInstructionText, currentProblem: currentProblemText })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Սերվերի սխալ: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateContent(botProblem, data.answer); 
+                })
+                .catch(error => {
+                    console.error("Սխալ տեղի ունեցավ:", error);
+                    botProblem.innerHTML = `Սխալ տեղի ունեցավ: ${error.message}`;
+                });
+            });
+    
+            generateSolutionButton.addEventListener('click', function () {
+                const exampleProblem = document.getElementById('example-problem').value;
+                const mistakeDescription = document.getElementById('mistake-description').value.trim();
+                const currentProblemText = botProblem.innerHTML.trim();
+    
+                if (currentProblemText === '') {
+                    alert('Խնդրում ենք նախ գեներացնել խնդիրը։');
+                    return;
+                }
+    
+                botSolution.innerHTML = "Բեռնվում է...";
+    
+                // Send the initial request to the server
+                fetch(`/generate_review_solution/armenian`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ exampleProblem: exampleProblem, mistakeDescription: mistakeDescription, problem: currentProblemText })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Սերվերի սխալ: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateContent(botSolution, data.answer); 
+                    botSolution.contentEditable = true;
+                })
+                .catch(error => {
+                    console.error("Սխալ տեղի ունեցավ:", error);
+                    botSolution.innerHTML = `Սխալ տեղի ունեցավ: ${error.message}`;
+                    botSolution.contentEditable = false;
+                });
+            });
+    
+            changeSolutionButton.addEventListener('click', function () {
+                const currentProblemText = botProblem.innerHTML.trim();
+                const userInstructionText = userInstructionSols.value.trim();
+                const currentSolutionText = botSolution.innerHTML.trim();
+    
+                if (currentProblemText === '') {
+                    alert('Խնդրում ենք նախ գեներացնել խնդիրը։');
+                    return;
+                }
+    
+                if (userInstructionText === '') {
+                    alert('Խնդրում ենք մուտքագրել հրահանգներ լուծումը փոփոխելու համար։');
+                    return;
+                }
+    
+                botSolution.innerHTML = "Բեռնվում է...";
+    
+                // Send the user's instruction and the current response to the backend
+                fetch(`/change_review_solution/armenian`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ problem: currentProblemText, instruction: userInstructionText,
+                        currentSolution: currentSolutionText })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Սերվերի սխալ: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateContent(botSolution, data.answer);
+                })
+                .catch(error => {
+                    console.error("Սխալ տեղի ունեցավ:", error);
+                    botSolution.innerHTML = `Սխալ տեղի ունեցավ: ${error.message}`;
+                });
+            });
+        });
+    </script>
+    
+</body>
+</html>

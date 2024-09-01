@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Ed Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Light color palette with a gradient background */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #E0F7FF, #FFFFFF); /* Light blue fading to white */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #333;
+        }
+
+        /* Main container with modern glassmorphism effect */
+        .container {
+            max-width: 900px;
+            width: 90%;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 1px solid rgba(200, 200, 200, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Heading styles */
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            color: #333;
+            letter-spacing: 0.5px;
+        }
+
+        /* Language selector styles */
+        .language-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .language-selector button {
+            background: #fff;
+            color: #333;
+            border: 2px solid #ddd;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 0 10px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .language-selector button.active {
+            background: #6C63FF;
+            color: #ffffff;
+        }
+
+        .language-selector button:hover {
+            border-color: #6C63FF;
+        }
+
+        /* Product grid and card styles */
+        .products {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .product {
+            font-size: 1.5em;
+            background: #ffffff;
+            color: #333;
+            padding: 20px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(200, 200, 200, 0.2);
+        }
+
+        .product:hover {
+            background: #f7faff;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive grid layout */
+        @media (min-width: 768px) {
+            .products {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .products {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="language-selector">
+            <button id="english-btn" class="active" data-language="English">English</button>
+            <button id="armenian-btn" data-language="Armenian">Armenian</button>
+        </div>
+        <h1 id="title">EduVision AI</h1>
+        <div class="products">
+            <div class="product" id="applied_math" data-english-url="{{ url_for('render_applied_math', language='english') }}" data-armenian-url="{{ url_for('render_applied_math', language='armenian') }}">
+                <span class="product-title" data-english="Applied Math Problem Generator" data-armenian="Կիրառական Մաթեմատիկայի Խնդիրներ">Applied Math Problem Generator</span>
+            </div>
+            <div class="product" id="review_problem" data-english-url="{{ url_for('render_review_problem', language='english') }}" data-armenian-url="{{ url_for('render_review_problem', language='armenian') }}">
+                <span class="product-title" data-english="Review Problem Generator" data-armenian="Կրկնության Խնդիրներ">Review Problem Generator</span>
+            </div>
+            <div class="product" id="error_feedback" data-english-url="{{ url_for('render_error_feedback', language='english') }}" data-armenian-url="{{ url_for('render_error_feedback', language='armenian') }}">
+                <span class="product-title" data-english="Code Error Feedback Generator" data-armenian="Ծրագրային Սխալների Բացատրություն">Code Error Feedback Generator</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const englishBtn = document.getElementById('english-btn');
+            const armenianBtn = document.getElementById('armenian-btn');
+            const title = document.getElementById('title');
+            const products = document.querySelectorAll('.product');
+            let currentLanguage = 'english';
+
+            function setLanguage(language) {
+                currentLanguage = language;
+                if (language === 'armenian') {
+                    title.textContent = 'EduVision ԱԲ';
+                    englishBtn.textContent = 'Անգլերեն';
+                    armenianBtn.textContent = 'Հայերեն';
+                    englishBtn.classList.remove('active');
+                    armenianBtn.classList.add('active');
+                    products.forEach(product => {
+                        const title = product.querySelector('.product-title');
+                        title.textContent = title.getAttribute('data-armenian');
+                    });
+                } else {
+                    title.textContent = 'EduVision AI';
+                    englishBtn.textContent = 'English';
+                    armenianBtn.textContent = 'Armenian';
+                    englishBtn.classList.add('active');
+                    armenianBtn.classList.remove('active');
+                    products.forEach(product => {
+                        const title = product.querySelector('.product-title');
+                        title.textContent = title.getAttribute('data-english');
+                    });
+                }
+            }
+
+            englishBtn.addEventListener('click', function () {
+                setLanguage('english');
+            });
+
+            armenianBtn.addEventListener('click', function () {
+                setLanguage('armenian');
+            });
+
+            products.forEach(product => {
+                product.addEventListener('click', function () {
+                    const url = product.getAttribute(`data-${currentLanguage}-url`);
+                    window.location.href = url;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
